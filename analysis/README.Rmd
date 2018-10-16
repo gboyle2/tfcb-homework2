@@ -1,0 +1,158 @@
+---
+title: "Homework 2"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Step-by-step instructions to re-create Lecture 3 analyses
+
+##Import tidyverse
+
+
+```{r}
+library(tidyverse)
+```
+
+
+
+##Read the TSV file
+
+
+```{r}
+data <- read_tsv("https://github.com/gboyle2/tfcb-homework2/data/example_dataset_2.tsv") %>% 
+  print()
+```
+
+
+##Use mutate to create new columns
+
+```{r}
+data <- data %>% 
+  mutate(mean_ratio = mean_yfp / mean_rfp) %>% 
+  print()
+```
+
+
+  
+
+##Use mutate to modify existing columns
+  
+
+```{r}
+data %>% 
+  mutate(mean_ratio = round(mean_ratio, 2)) %>% 
+  print()
+```
+
+
+##Use TYPE_join to join two data frames
+
+```{r}
+annotations <- read_tsv("https://github.com/gboyle2/tfcb-homework2/data/example_dataset_3.tsv") %>% 
+  print()
+```
+
+
+##inner_join keeps common rows
+
+```{r}
+data %>%
+  inner_join(annotations, by = "strain") %>%
+  print()
+```
+
+
+##left_join keeps all rows in left data frame
+
+```{r}
+data %>%
+  left_join(annotations, by = "strain") %>%
+  print()
+```
+
+
+##right_join keeps all rows in right data frame
+
+```{r}
+data %>%
+  right_join(annotations, by = "strain") %>%
+  print()
+```
+
+
+##Use summarize to calculate stats across rows
+
+```{r}
+data %>%
+  summarize(max_yfp = max(mean_yfp),
+            max_rfp = max(mean_rfp)) %>%
+  print()
+```
+
+
+##Use group_by to group subsets of rows
+
+```{r}
+data <- read_tsv("https://github.com/gboyle2/tfcb-homework2/data/example_dataset_4.tsv") %>%
+  print(n = 10)
+```
+
+
+##Use group_by to group subsets of rows 
+
+```{r}
+data %>%
+  group_by(strain) %>%
+  print(n = 10)
+```
+
+
+##group_by + summarize for statistics by group
+
+```{r}
+data %>%
+  group_by(strain) %>%
+  summarize(mean_yfp = mean(yfp), mean_rfp = mean(rfp)) %>%
+  print()
+```
+
+
+##group_by + summarize for statistics by group
+```{r}
+data %>%
+  group_by(strain) %>%
+  summarize(mean_yfp = mean(yfp), mean_rfp = mean(rfp),
+            se_yfp = sd(yfp) / sqrt(n()),
+            se_rfp = sd(rfp) / sqrt(n())) %>%
+  print()
+```
+
+
+##%>% enables complex data analysis pipelines
+
+```{r}
+data %>%
+  group_by(strain) %>%
+  summarize(mean_yfp = mean(yfp), mean_rfp = mean(rfp)) %>%
+  mutate(mean_ratio = mean_yfp / mean_rfp) %>%
+  left_join(annotations, by = "strain") %>%
+  print()
+```
+
+##%>% and + if you want to plot
+
+```{r}
+data %>%
+  group_by(strain) %>%
+  summarize(mean_yfp = mean(yfp), mean_rfp = mean(rfp)) %>%
+  mutate(mean_ratio = mean_yfp / mean_rfp) %>%
+  left_join(annotations, by = "strain") %>%
+  ggplot(aes(x = kozak_region, y = mean_ratio,
+              color = insert_sequence, group = insert_sequence)) +
+geom_line() +
+geom_point()
+```
+
