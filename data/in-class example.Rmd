@@ -1,0 +1,19 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Import packages
+```{r}
+library(tidyverse)
+```
+
+## Read in data
+```{r}
+flow_data <- read_tsv("")
+```
+
